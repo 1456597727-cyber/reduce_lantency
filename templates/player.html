@@ -11,40 +11,37 @@ pre{background:#000;padding:16px;border-radius:8px;font-size:0.82rem;overflow-x:
 .btn{padding:12px 24px;border:none;border-radius:8px;cursor:pointer;font-size:0.95rem;font-weight:600;margin:4px;}
 .btn-green{background:#0f9;color:#000;}
 .copied{color:#0f9;font-size:0.85rem;display:none;}
-ol li{padding:8px 0;color:#8892b0;line-height:1.8;}
-ol li span{color:#fff;}
 </style></head><body>
 <div class="top"><span>▶ 播放页面</span><a href="/dashboard">← 返回</a></div>
 <div class="cont">
 
 <div class="card">
 <h2>⚙ 首次使用（只需一次）</h2>
-<ol>
-<li>下载 ffplay：<a href="https://www.gyan.dev/ffmpeg/builds/ffmpeg-release-essentials.zip" style="color:#e94560;">ffmpeg-release-essentials.zip</a>（40MB）</li>
-<li>解压到随便一个文件夹，比如 <code>C:\player\</code></li>
-<li>进到 <code>bin</code> 文件夹，里面有 <code>ffplay.exe</code></li>
-</ol>
+<p style="color:#8892b0;line-height:2.2;font-size:0.9rem;">
+1. 下载 <a href="https://www.gyan.dev/ffmpeg/builds/ffmpeg-release-essentials.zip" style="color:#e94560;">ffmpeg-release-essentials.zip</a>（40MB）<br>
+2. 解压到随便一个文件夹，比如 <code>C:\player\</code><br>
+3. 打开解压出的 <code>bin</code> 文件夹，里面有 <code>ffplay.exe</code>
+</p>
+</div>
+
+<div class="card">
+<h2>▶ 复制命令播放</h2>
+<p style="color:#8892b0;margin-bottom:12px;font-size:0.85rem;">打开 <code>PowerShell</code>，cd 到 <code>ffplay.exe</code> 所在文件夹，粘贴运行：</p>
+<pre id="ffplayCmd"></pre>
+<button class="btn btn-green" onclick="copyCmd()">📋 一键复制</button>
+<span class="copied" id="copiedMsg">✅ 已复制！去 PowerShell 粘贴运行</span>
 </div>
 
 <div class="card">
 <h2>🔗 播放链接</h2>
 <pre id="streamUrl" style="color:#8892b0;"></pre>
 </div>
+</div>
 
-<div class="card">
-<h2>▶ 打开方式</h2>
-<p style="color:#8892b0;margin-bottom:12px;"><b>推荐</b>：用 <a href="https://potplayer.tv" style="color:#e94560;">PotPlayer</a>（免费）→ 右键 → 打开 → 粘贴链接，最简单</p>
-<p style="color:#8892b0;margin-bottom:12px;">或者打开 <code>cmd</code>，cd 到 ffplay 解压目录的 bin 文件夹，运行：</p>
-<pre id="ffplayCmd"></pre>
-<button class="btn btn-green" onclick="copyCmd()">📋 复制命令</button>
-<span class="copied" id="copiedMsg">✅ 已复制！</span>
-</div>
-</div>
 <script>
 (function(){
     var url = {{ stream_url | tojson }};
-    // Full path command - works from any directory
-    var cmd = '& "D:\\reduce_latency\\ffmpeg\\bin\\ffplay.exe" -fflags nobuffer -flags low_delay -framedrop -max_delay 0 -window_title LowLatency "' + url + '"';
+    var cmd = '& ".\\ffplay.exe" -fflags nobuffer -flags low_delay -framedrop -infbuf -max_delay 0 -sync ext -vf "setpts=0.9091*PTS" -af "atempo=1.1000" -window_title 极速播放 "' + url + '"';
 
     document.getElementById('ffplayCmd').textContent = cmd;
     document.getElementById('streamUrl').textContent = url;
