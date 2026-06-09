@@ -29,12 +29,13 @@ th{color:#8892b0;font-weight:600;}
 <form class="gen-box" method="post" action="/admin/gen_codes">
 <div><label>前缀</label><input name="prefix" value="VIP"></div>
 <div><label>数量</label><input name="count" type="number" value="5" min="1" max="100"></div>
+<div><label>天数（0=永久）</label><input name="days" type="number" value="0" min="0" max="3650"></div>
 <button class="btn btn-green" type="submit">生成</button>
 </form></div>
 
 <!-- Unused Codes -->
 <div class="card"><h2>未使用激活码 ({{ codes|length }})</h2>
-<div class="codes">{% for c in codes %}<span class="code-badge">{{ c['code'] }}</span>{% endfor %}</div>
+<div class="codes">{% for c in codes %}<span class="code-badge">{{ c['code'] }}{% if c['days']>0 %}({{c['days']}}天){% endif %}</span>{% endfor %}</div>
 {% if not codes %}<p style="color:#8892b0;font-size:0.85rem;">暂无，请生成新码</p>{% endif %}</div>
 
 <!-- Used Codes -->
@@ -44,10 +45,12 @@ th{color:#8892b0;font-weight:600;}
 
 <!-- Users -->
 <div class="card"><h2>用户列表 ({{ users|length }})</h2>
-<table><thead><tr><th>用户名</th><th>激活码</th><th>使用次数</th><th>注册时间</th><th>操作</th></tr></thead>
+<table><thead><tr><th>用户名</th><th>激活码</th><th>到期</th><th>使用次数</th><th>注册时间</th><th>操作</th></tr></thead>
 <tbody>{% for u in users %}
 <tr><td>{{ u['username'] }}{% if u['username']=='admin' %} 👑{% endif %}</td>
-<td style="font-family:monospace">{{ u['code'] }}</td><td>{{ u['streams_used'] }}</td><td>{{ u['created_at'] }}</td>
+<td style="font-family:monospace">{{ u['code'] }}</td>
+<td>{{ u['expires_at'] or '永久' }}</td>
+<td>{{ u['streams_used'] }}</td><td>{{ u['created_at'] }}</td>
 <td>{% if u['username']!='admin' %}<a href="/admin/delete_user/{{ u['id'] }}" class="btn btn-red" style="font-size:0.75rem;padding:4px 8px;" onclick="return confirm('确定删除？')">删除</a>{% endif %}</td></tr>{% endfor %}</tbody></table></div>
 </div>
 </body></html>

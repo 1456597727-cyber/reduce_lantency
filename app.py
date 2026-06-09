@@ -28,19 +28,26 @@ def init_db():
             password TEXT NOT NULL,
             code TEXT UNIQUE NOT NULL,
             streams_used INTEGER DEFAULT 0,
+            expires_at TEXT,
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         );
         CREATE TABLE IF NOT EXISTS act_codes (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             code TEXT UNIQUE NOT NULL,
+            days INTEGER DEFAULT 0,
             used_by TEXT,
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         );
     ''')
-    # Create admin if not exists
+    # Upgrade existing tables
+    try: conn.execute("ALTER TABLE users ADD COLUMN expires_at TEXT")
+    except: pass
+    try: conn.execute("ALTER TABLE act_codes ADD COLUMN days INTEGER DEFAULT 0")
+    except: pass
+    # Admin
     if not conn.execute("SELECT 1 FROM users WHERE username='admin'").fetchone():
         conn.execute("INSERT INTO users (username,password,code) VALUES ('admin','admin123','ADMIN')")
-        conn.execute("INSERT INTO act_codes (code) VALUES ('ADMIN')")
+        conn.execute("INSERT INTO act_codes (code,days) VALUES ('ADMIN',0)")
     conn.commit()
     conn.close()
 
@@ -75,6 +82,12 @@ def do_login():
                       (request.form['username'], request.form['password'])).fetchone()
     db.close()
     if user:
+        # Check expiry
+        if user['expires_at']:
+            from datetime import datetime
+            if datetime.now() > datetime.fromisoformat(user['expires_at']):
+                flash('账号已过期，请联系购买新的激活码')
+                return redirect(url_for('login'))
         session['user_id'] = user['id']
         session['username'] = user['username']
         return redirect(url_for('dashboard'))
@@ -95,13 +108,20 @@ def register():
         db.close()
         flash('激活码无效或已被使用')
         return render_template('register.html')
+    # Calculate expiry
+    days = act['days'] or 0
+    expires_at = None
+    if days > 0:
+        from datetime import datetime, timedelta
+        expires_at = (datetime.now() + timedelta(days=days)).isoformat()
     # Check username
     if db.execute("SELECT 1 FROM users WHERE username=?", (username,)).fetchone():
         db.close()
         flash('用户名已存在')
         return render_template('register.html')
     # Create user
-    db.execute("INSERT INTO users (username,password,code) VALUES (?,?,?)", (username, password, code))
+    db.execute("INSERT INTO users (username,password,code,expires_at) VALUES (?,?,?,?)",
+               (username, password, code, expires_at))
     db.execute("UPDATE act_codes SET used_by=? WHERE code=?", (username, code))
     db.commit()
     db.close()
@@ -119,8 +139,14 @@ def logout():
 def dashboard():
     db = get_db()
     user = db.execute("SELECT * FROM users WHERE id=?", (session['user_id'],)).fetchone()
+    # Calculate remaining days
+    days_left = None
+    if user['expires_at']:
+        from datetime import datetime
+        delta = datetime.fromisoformat(user['expires_at']) - datetime.now()
+        days_left = max(0, delta.days)
     db.close()
-    return render_template('dashboard.html', user=user)
+    return render_template('dashboard.html', user=user, days_left=days_left)
 
 # === FLV Stream Proxy ===
 # 核心：服务器代理 FLV 流，浏览器通过 /play 访问
@@ -183,15 +209,16 @@ def admin():
 def gen_codes():
     count = int(request.form.get('count', 1))
     prefix = request.form.get('prefix', 'VIP')
+    days = int(request.form.get('days', 0))
     db = get_db()
     new_codes = []
     for _ in range(count):
         code = f"{prefix}-{''.join(secrets.choice(string.ascii_uppercase + string.digits) for _ in range(12))}"
-        db.execute("INSERT INTO act_codes (code) VALUES (?)", (code,))
+        db.execute("INSERT INTO act_codes (code,days) VALUES (?,?)", (code, days))
         new_codes.append(code)
     db.commit()
     db.close()
-    flash(f'已生成 {count} 个激活码')
+    flash(f'已生成 {count} 个激活码（{days}天有效期）' if days > 0 else f'已生成 {count} 个永久激活码')
     return redirect(url_for('admin'))
 
 @app.route('/admin/delete_user/<int:uid>')
