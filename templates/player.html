@@ -41,7 +41,8 @@ ol li span{color:#fff;}
 <script>
 (function(){
     var url = {{ stream_url | tojson }};
-    var cmd = '& ".\\ffplay.exe" -fflags nobuffer -flags low_delay -framedrop -max_delay 0 -window_title LowLatency "' + url + '"';
+    // Full path command - works from any directory
+    var cmd = '& "D:\\reduce_latency\\ffmpeg\\bin\\ffplay.exe" -fflags nobuffer -flags low_delay -framedrop -max_delay 0 -window_title LowLatency "' + url + '"';
 
     document.getElementById('ffplayCmd').textContent = cmd;
     document.getElementById('streamUrl').textContent = url;
