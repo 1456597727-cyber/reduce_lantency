@@ -18,24 +18,26 @@ ol li span{color:#fff;}
 <div class="cont">
 
 <div class="card">
+<h2>⚙ 首次使用（只需一次）</h2>
+<ol>
+<li>下载 ffplay：<a href="https://www.gyan.dev/ffmpeg/builds/ffmpeg-release-essentials.zip" style="color:#e94560;">ffmpeg-release-essentials.zip</a>（40MB）</li>
+<li>解压到随便一个文件夹，比如 <code>C:\player\</code></li>
+<li>进到 <code>bin</code> 文件夹，里面有 <code>ffplay.exe</code></li>
+</ol>
+</div>
+
+<div class="card">
 <h2>🔗 播放链接</h2>
 <pre id="streamUrl" style="color:#8892b0;"></pre>
 </div>
 
 <div class="card">
-<h2>▶ 打开方式（任选一种）</h2>
-<ol>
-<li><span>PotPlayer</span>（推荐）：右键 → 打开 → 粘贴链接</li>
-<li><span>VLC</span>：媒体 → 打开网络串流 → 粘贴链接</li>
-<li><span>命令行</span>（有ffplay的话）：</li>
-</ol>
+<h2>▶ 打开方式</h2>
+<p style="color:#8892b0;margin-bottom:12px;"><b>推荐</b>：用 <a href="https://potplayer.tv" style="color:#e94560;">PotPlayer</a>（免费）→ 右键 → 打开 → 粘贴链接，最简单</p>
+<p style="color:#8892b0;margin-bottom:12px;">或者打开 <code>cmd</code>，cd 到 ffplay 解压目录的 bin 文件夹，运行：</p>
 <pre id="ffplayCmd"></pre>
 <button class="btn btn-green" onclick="copyCmd()">📋 复制命令</button>
 <span class="copied" id="copiedMsg">✅ 已复制！</span>
-</div>
-
-<div class="card" style="font-size:0.85rem;color:#8892b0;">
-💡 <b>PotPlayer</b> 是最简单的播放方式。没有的话下载地址：<a href="https://potplayer.tv" style="color:#e94560;">potplayer.tv</a>（免费）
 </div>
 </div>
 <script>
