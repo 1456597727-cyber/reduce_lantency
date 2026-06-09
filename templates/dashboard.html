@@ -1,0 +1,26 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>控制台 - 直播服务</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Microsoft YaHei',sans-serif;background:#0f0f1a;color:#fff;min-height:100vh;}
+nav{background:#1a1a2e;padding:0 24px;display:flex;align-items:center;height:56px;gap:20px;border-bottom:1px solid rgba(255,255,255,0.06);}
+nav a{color:#8892b0;text-decoration:none;font-size:0.9rem;}
+nav a:hover{color:#fff;}
+nav .brand{color:#e94560;font-weight:700;margin-right:auto;}
+.cont{max-width:700px;margin:40px auto;padding:0 20px;}
+.card{background:#1a1a2e;border-radius:16px;padding:28px;margin-bottom:16px;}
+h2{font-size:1.1rem;margin-bottom:16px;}
+.url-input{display:flex;gap:10px;}
+.url-input input{flex:1;padding:12px;border:1px solid rgba(255,255,255,0.15);border-radius:8px;background:rgba(255,255,255,0.04);color:#fff;font-size:0.9rem;}
+.btn{padding:12px 24px;border:none;border-radius:8px;font-size:0.95rem;cursor:pointer;font-weight:600;}
+.btn-go{background:#e94560;color:#fff;}
+.btn-logout{background:transparent;border:1px solid rgba(255,255,255,0.2);color:#8892b0;padding:6px 14px;border-radius:6px;font-size:0.8rem;text-decoration:none;}
+.info{font-size:0.85rem;color:#8892b0;margin-top:8px;}
+</style></head><body>
+<nav><span class="brand">📺 直播观看服务</span><span style="color:#8892b0;font-size:0.85rem;">{{ user['username'] }} | 已用{{ user['streams_used'] }}次</span><a href="/logout" class="btn-logout">退出</a></nav>
+<div class="cont">
+<div class="card"><h2>开始观看</h2>
+<div class="url-input"><input id="urlInput" type="text" placeholder="粘贴 FLV 拉流链接到这里..." autofocus><button class="btn btn-go" onclick="go()">▶ 播放</button></div>
+<div class="info">支持 HTTP-FLV 格式的拉流链接。链接通过浏览器插件获取。</div></div>
+</div>
+<script>function go(){var u=document.getElementById('urlInput').value.trim();if(u)location.href='/play?url='+encodeURIComponent(u);}</script>
+</body></html>

@@ -1,0 +1,20 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>注册 - 直播观看服务</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Microsoft YaHei',sans-serif;background:#0f0f1a;color:#fff;min-height:100vh;display:flex;align-items:center;justify-content:center;}
+.card{background:#1a1a2e;border-radius:16px;padding:40px;width:380px;box-shadow:0 0 40px rgba(233,69,96,0.15);}
+h1{text-align:center;font-size:1.5rem;margin-bottom:8px;}
+.subtitle{text-align:center;color:#8892b0;font-size:0.85rem;margin-bottom:28px;}
+label{font-size:0.85rem;color:#8892b0;display:block;margin-bottom:6px;}
+input{width:100%;padding:12px;border:1px solid rgba(255,255,255,0.1);border-radius:8px;background:rgba(255,255,255,0.04);color:#fff;font-size:0.95rem;margin-bottom:16px;}
+.btn{width:100%;padding:12px;border:none;border-radius:8px;font-size:1rem;cursor:pointer;font-weight:600;background:#e94560;color:#fff;}
+.msg{text-align:center;padding:10px;margin-bottom:12px;border-radius:8px;font-size:0.85rem;}
+.msg-error{background:rgba(233,69,96,0.15);color:#e94560;}
+.link{text-align:center;margin-top:16px;font-size:0.85rem;color:#8892b0;}
+.link a{color:#e94560;text-decoration:none;}
+</style></head><body>
+<div class="card"><h1>注册新账号</h1><p class="subtitle">需要有效的激活码</p>
+{% for msg in get_flashed_messages() %}<div class="msg msg-error">{{ msg }}</div>{% endfor %}
+<form method="post"><label>激活码</label><input name="code" required placeholder="例如: VIP-ABC123DEF456"><label>用户名</label><input name="username" required><label>密码</label><input name="password" type="password" required><button class="btn" type="submit">注 册</button></form>
+<div class="link">已有账号？<a href="/">登录</a></div></div>
+</body></html>

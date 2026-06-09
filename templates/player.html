@@ -1,0 +1,58 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>播放中</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:#0f0f1a;color:#fff;font-family:'Microsoft YaHei',sans-serif;}
+.top{position:fixed;top:0;left:0;right:0;z-index:10;background:#1a1a2e;padding:12px 20px;display:flex;align-items:center;gap:20px;font-size:0.9rem;border-bottom:1px solid rgba(255,255,255,0.06);}
+.top a{color:#e94560;text-decoration:none;}
+.cont{max-width:800px;margin:80px auto 0;padding:20px;}
+.card{background:#1a1a2e;border-radius:12px;padding:28px;margin:16px 0;}
+.card h2{font-size:1.1rem;margin-bottom:16px;}
+pre{background:#000;padding:16px;border-radius:8px;font-size:0.82rem;overflow-x:auto;color:#0f9;word-break:break-all;white-space:pre-wrap;margin:12px 0;}
+.btn{padding:12px 24px;border:none;border-radius:8px;cursor:pointer;font-size:0.95rem;font-weight:600;margin:4px;}
+.btn-green{background:#0f9;color:#000;}
+.copied{color:#0f9;font-size:0.85rem;display:none;}
+ol li{padding:8px 0;color:#8892b0;line-height:1.8;}
+ol li span{color:#fff;}
+</style></head><body>
+<div class="top"><span>▶ 播放页面</span><a href="/dashboard">← 返回</a></div>
+<div class="cont">
+
+<div class="card">
+<h2>🔗 播放链接</h2>
+<pre id="streamUrl" style="color:#8892b0;"></pre>
+</div>
+
+<div class="card">
+<h2>▶ 打开方式（任选一种）</h2>
+<ol>
+<li><span>PotPlayer</span>（推荐）：右键 → 打开 → 粘贴链接</li>
+<li><span>VLC</span>：媒体 → 打开网络串流 → 粘贴链接</li>
+<li><span>命令行</span>（有ffplay的话）：</li>
+</ol>
+<pre id="ffplayCmd"></pre>
+<button class="btn btn-green" onclick="copyCmd()">📋 复制命令</button>
+<span class="copied" id="copiedMsg">✅ 已复制！</span>
+</div>
+
+<div class="card" style="font-size:0.85rem;color:#8892b0;">
+💡 <b>PotPlayer</b> 是最简单的播放方式。没有的话下载地址：<a href="https://potplayer.tv" style="color:#e94560;">potplayer.tv</a>（免费）
+</div>
+</div>
+<script>
+(function(){
+    var url = {{ stream_url | tojson }};
+    var cmd = '& ".\\ffplay.exe" -fflags nobuffer -flags low_delay -framedrop -max_delay 0 -window_title LowLatency "' + url + '"';
+
+    document.getElementById('ffplayCmd').textContent = cmd;
+    document.getElementById('streamUrl').textContent = url;
+
+    window.copyCmd = function(){
+        navigator.clipboard.writeText(cmd).then(function(){
+            var m = document.getElementById('copiedMsg');
+            m.style.display = 'inline';
+            setTimeout(function(){ m.style.display = 'none'; }, 3000);
+        });
+    };
+})();
+</script>
+</body></html>
